@@ -267,6 +267,13 @@
             box-shadow: inset 0 0 0 1px var(--coach-border);
         }
 
+        /* Missed best move (shown after you play something else) */
+        .missed-best-cell {
+            background-color: var(--coach-bg) !important;
+            border: 2px dashed var(--coach-color) !important;
+            box-shadow: inset 0 0 0 1px var(--coach-border);
+        }
+
         /* Active Player Card / Clock */
         .player-card-active-x {
             border-color: var(--x-color) !important;
@@ -708,6 +715,15 @@
                         <span class="block text-[11px] text-theme-muted leading-snug">Evaluation bar and score for both sides</span>
                     </div>
                     <button id="meter-toggle" type="button" role="switch" aria-checked="true" onclick="toggleEngineMeter()" class="tactile-btn theme-primary-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0">Shown</button>
+                </div>
+
+                <!-- Missed Best Move Toggle -->
+                <div class="flex items-center justify-between gap-3 p-3 rounded-xl surface-sub border">
+                    <div>
+                        <span class="block font-mono text-[10px] font-bold uppercase tracking-wider text-theme-secondary">Show Missed Best Move</span>
+                        <span class="block text-[11px] text-theme-muted leading-snug">After a move that isn&rsquo;t the engine&rsquo;s top choice, highlight the best square in green</span>
+                    </div>
+                    <button id="missed-best-toggle" type="button" role="switch" aria-checked="true" onclick="toggleMissedBest()" class="tactile-btn theme-primary-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0">On</button>
                 </div>
 
                 <!-- Online Multiplayer Lobby -->
@@ -2225,6 +2241,38 @@
                 (engineMeterVisible ? 'theme-primary-btn' : 'surface-muted border text-theme-primary');
         }
 
+        // --- Missed best move highlight (green square when you play something else) ---
+        const MISSED_BEST_STORAGE_KEY = 'uttt_missed_best_v1';
+        let missedBestEnabled = true;
+        let missedBestCoords = null; // { mr, mc, sr, sc, player }
+
+        function initMissedBest() {
+            try { missedBestEnabled = localStorage.getItem(MISSED_BEST_STORAGE_KEY) !== 'off'; } catch (e) {}
+            applyMissedBestUI();
+        }
+
+        function toggleMissedBest() {
+            missedBestEnabled = !missedBestEnabled;
+            try { localStorage.setItem(MISSED_BEST_STORAGE_KEY, missedBestEnabled ? 'on' : 'off'); } catch (e) {}
+            applyMissedBestUI();
+            updateUI();
+        }
+
+        function applyMissedBestUI() {
+            const btn = document.getElementById('missed-best-toggle');
+            if (!btn) return;
+            btn.textContent = missedBestEnabled ? 'On' : 'Off';
+            btn.setAttribute('aria-checked', String(missedBestEnabled));
+            btn.className = 'tactile-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0 ' +
+                (missedBestEnabled ? 'theme-primary-btn' : 'surface-muted border text-theme-primary');
+        }
+
+        function isMissedBestCell(mr, mc, sr, sc) {
+            const m = missedBestCoords;
+            return !!m && missedBestEnabled && !spectatorMode && !coachBlockedOnline() &&
+                m.mr === mr && m.mc === mc && m.sr === sr && m.sc === sc;
+        }
+
         // --- Game Initialization & Reset ---
         function initGame() {
             if (aiTimerId) {
@@ -2247,6 +2295,7 @@
             moveHistory = [];
             isAiThinking = false;
             hintCellCoords = null;
+            missedBestCoords = null;
             transpositionTable.clear();
             activeBotOpening = BOT_OPENINGS[Math.floor(Math.random() * BOT_OPENINGS.length)];
 
@@ -3409,6 +3458,15 @@
             );
             applyBestMoveFlag(quality, analysisBefore, analysisAfter, { mr, mc, sr, sc }, playerMakingMove, winner === playerMakingMove);
 
+            // Keep the green marker until the same player moves again (so a quick bot reply doesn't wipe it)
+            const mbMode = document.getElementById('game-mode').value;
+            if (missedBestCoords && (mbMode === 'pvp' || missedBestCoords.player === playerMakingMove)) missedBestCoords = null;
+            const mbIsMine = mbMode === 'pvp' ||
+                (mbMode === 'ai' && playerMakingMove === humanSideActual) ||
+                (mbMode === 'online' && !spectatorMode && playerMakingMove === myOnlineRole);
+            const mbBest = analysisBefore && analysisBefore.bestMove;
+            if (mbIsMine && !quality.isBest && mbBest) missedBestCoords = { ...mbBest, player: playerMakingMove };
+
             playMoveSound(playerMakingMove, wonSubBoard, winner === playerMakingMove, Boolean(analysisAfter.mateIn));
 
             moveHistory.push({
@@ -3451,6 +3509,7 @@
         function performLocalUndo() {
             if (moveHistory.length === 0) return;
             clearHint();
+            missedBestCoords = null;
             const mode = document.getElementById('game-mode').value;
             let steps = (mode === 'ai' && currentPlayer === humanSideActual && moveHistory.length >= 2) ? 2 : 1;
 
@@ -3809,8 +3868,13 @@
                             cellBtn.className = 'cell-btn rounded-md flex items-center justify-center font-serif text-lg sm:text-2xl font-bold focus:outline-none';
                             cellBtn.style.boxShadow = '';
 
+                            const isMissed = val === 0 && isMissedBestCell(mr, mc, sr, sc);
+                            cellBtn.title = isMissed ? 'Best move was here' : '';
+
                             if (isHint && val === 0) {
                                 cellBtn.classList.add('hint-cell');
+                            } else if (isMissed) {
+                                cellBtn.classList.add('missed-best-cell');
                             } else if (isLast) {
                                 cellBtn.style.boxShadow = `inset 0 0 0 2px ${val === 1 ? 'var(--x-border)' : 'var(--o-border)'}`;
                             }
@@ -3821,6 +3885,8 @@
                                 cellBtn.innerHTML = `<span class="text-o animate-stamp">O</span>`;
                             } else if (isHint) {
                                 cellBtn.innerHTML = `<span class="text-coach font-mono text-xs font-bold">&bull;</span>`;
+                            } else if (isMissed) {
+                                cellBtn.innerHTML = `<span class="text-coach font-mono text-sm font-bold">&#10003;</span>`;
                             } else {
                                 cellBtn.innerHTML = '';
                             }
@@ -4051,6 +4117,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             initEngineMeter();
+            initMissedBest();
             updateProfileHeaderUI();
             updateExpectedEloPreview();
             updateSideButtonsUI();
