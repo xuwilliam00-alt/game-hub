@@ -138,18 +138,22 @@
               </div>
 
               <!-- Career Stats Summary -->
-              <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
-                  <div id="stat-total-games" class="font-mono text-sm font-bold text-white">0</div>
-                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Played</div>
+              <div class="grid grid-cols-4 gap-1.5 text-center">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-1">
+                  <div id="stat-total-games" class="font-mono text-xs font-bold text-white">0</div>
+                  <div class="text-[9px] text-slate-400 uppercase tracking-wider">Played</div>
                 </div>
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
-                  <div id="stat-total-wins" class="font-mono text-sm font-bold text-sky-400">0</div>
-                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Wins</div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-1">
+                  <div id="stat-total-wins" class="font-mono text-xs font-bold text-sky-400">0</div>
+                  <div class="text-[9px] text-slate-400 uppercase tracking-wider">Wins</div>
                 </div>
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
-                  <div id="stat-win-rate" class="font-mono text-sm font-bold text-emerald-400">0%</div>
-                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Win Rate</div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-1">
+                  <div id="stat-win-rate" class="font-mono text-xs font-bold text-emerald-400">0%</div>
+                  <div class="text-[9px] text-slate-400 uppercase tracking-wider">Win Rate</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-1">
+                  <div id="stat-rating" class="font-mono text-xs font-bold text-amber-400">1200</div>
+                  <div class="text-[9px] text-slate-400 uppercase tracking-wider">Rating</div>
                 </div>
               </div>
             </div>
@@ -158,7 +162,7 @@
             <div class="p-4 flex flex-col gap-2.5">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-100">Game History</span>
+                  <span class="text-xs font-bold text-slate-100">Game History & Rating Log</span>
                   <span id="history-count-pill" class="text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full">
                     0 saved
                   </span>
@@ -191,15 +195,15 @@
             <svg class="w-4 h-4 text-sky-400 transition-transform duration-200 group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
             </svg>
-            <span class="text-sm font-bold text-slate-100">Series & Time Control Settings</span>
+            <span class="text-sm font-bold text-slate-100">Series, Time & Theme Settings</span>
             <span id="settings-summary-pill" class="text-[11px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-              Best of 3 • 3m + 2s • Tactical Bot
+              Best of 3 • 3m + 2s • Tactical Bot • Neon Dark
             </span>
           </div>
           <span class="text-[11px] text-slate-400 font-medium">tap to expand / collapse</span>
         </summary>
 
-        <div class="p-4 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-950/40">
+        <div class="p-4 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-950/40">
           <!-- Opponent Mode -->
           <div>
             <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Opponent</label>
@@ -230,6 +234,17 @@
               <option value="180|2" selected>3 min + 2s (Blitz)</option>
               <option value="300|3">5 min + 3s (Rapid)</option>
               <option value="0|0">Unlimited (No Clock)</option>
+            </select>
+          </div>
+
+          <!-- Visual Theme Choice -->
+          <div>
+            <label class="block text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">Visual Theme</label>
+            <select id="select-theme" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+              <option value="neon" selected>Neon Dark (Cyber)</option>
+              <option value="slate">Slate Minimal (Clean)</option>
+              <option value="emerald">Emerald Pitch (Arena)</option>
+              <option value="sunset">Sunset Amber (Warm)</option>
             </select>
           </div>
         </div>
@@ -263,7 +278,7 @@
       </div>
 
       <!-- Ultimate 9x9 Macro Board Container -->
-      <div class="relative bg-slate-900/90 border border-slate-800 p-2.5 sm:p-4 rounded-2xl shadow-2xl">
+      <div id="board-container-wrapper" class="relative bg-slate-900/90 border border-slate-800 p-2.5 sm:p-4 rounded-2xl shadow-2xl transition-colors">
         <div id="macro-board" class="grid grid-cols-3 gap-2.5 sm:gap-3.5 aspect-square w-full max-w-[600px] mx-auto">
           <!-- 9 Sub-boards injected via JS -->
         </div>
@@ -335,7 +350,7 @@
 
   <script>
     // =========================================================================
-    // ULTIMATE TIC-TAC-TOE ENGINE (SERIES + TIME-AWARE BOTS + PROFILE MENU)
+    // ULTIMATE TIC-TAC-TOE ENGINE (SERIES + TIME-AWARE BOTS + RATING HISTORY)
     // =========================================================================
 
     const WIN_LINES = [
@@ -345,6 +360,49 @@
     ];
 
     const BOARD_NAMES = ['NW', 'N', 'NE', 'W', 'C', 'E', 'SW', 'S', 'SE'];
+
+    const THEMES = {
+      neon: {
+        bg: '#020617',
+        card: 'bg-slate-900/90 border-slate-800',
+        subActive: 'bg-slate-800/90 border-sky-400/70 active-board-glow',
+        subInactive: 'bg-slate-950/80 border-slate-800/80 opacity-85',
+        cellHover: 'bg-slate-900/95 border-slate-700/70 cell-hover',
+        cellNormal: 'bg-slate-900 border-slate-800',
+        xColor: 'text-sky-400',
+        oColor: 'text-rose-400'
+      },
+      slate: {
+        bg: '#0f172a',
+        card: 'bg-slate-800/90 border-slate-700',
+        subActive: 'bg-slate-700/90 border-indigo-400/80 active-board-glow',
+        subInactive: 'bg-slate-900/80 border-slate-700/80 opacity-85',
+        cellHover: 'bg-slate-800/95 border-slate-600 cell-hover',
+        cellNormal: 'bg-slate-800 border-slate-700',
+        xColor: 'text-indigo-300',
+        oColor: 'text-amber-300'
+      },
+      emerald: {
+        bg: '#022c22',
+        card: 'bg-emerald-950/90 border-emerald-800/80',
+        subActive: 'bg-emerald-900/90 border-emerald-400 active-board-glow',
+        subInactive: 'bg-emerald-950/80 border-emerald-900 opacity-85',
+        cellHover: 'bg-emerald-900/95 border-emerald-700 cell-hover',
+        cellNormal: 'bg-emerald-900/80 border-emerald-900',
+        xColor: 'text-emerald-300',
+        oColor: 'text-orange-400'
+      },
+      sunset: {
+        bg: '#271212',
+        card: 'bg-stone-900/90 border-stone-800',
+        subActive: 'bg-stone-800/90 border-amber-400 active-board-glow',
+        subInactive: 'bg-stone-950/80 border-stone-800 opacity-85',
+        cellHover: 'bg-stone-800/95 border-stone-700 cell-hover',
+        cellNormal: 'bg-stone-900 border-stone-800',
+        xColor: 'text-amber-400',
+        oColor: 'text-rose-400'
+      }
+    };
 
     const state = {
       boards: Array.from({ length: 9 }, () => Array(9).fill(null)),
@@ -356,8 +414,10 @@
       winReason: '',
       moves: [],
 
-      // Profile & Series Settings
+      // Profile, Rating & Series Settings
       playerName: 'Player X',
+      rating: 1200,
+      theme: 'neon',
       opponent: 'bot-tactical',
       seriesTarget: 2,
       scoreX: 0,
@@ -373,12 +433,13 @@
       timerInterval: null,
       botTimeout: null,
 
-      // Saved Match History
+      // Saved Match History & Rating Log
       history: []
     };
 
     // DOM References
     const macroBoardEl = document.getElementById('macro-board');
+    const boardContainerWrapperEl = document.getElementById('board-container-wrapper');
     const scoreXEl = document.getElementById('score-x');
     const scoreOEl = document.getElementById('score-o');
     const headerPlayerXNameEl = document.getElementById('header-player-x-name');
@@ -422,21 +483,26 @@
     const statTotalGamesEl = document.getElementById('stat-total-games');
     const statTotalWinsEl = document.getElementById('stat-total-wins');
     const statWinRateEl = document.getElementById('stat-win-rate');
+    const statRatingEl = document.getElementById('stat-rating');
     const historyCountPillEl = document.getElementById('history-count-pill');
     const historyListEl = document.getElementById('history-list');
 
-    // Load saved history & profile name
+    // Load saved history & profile name & rating
     try {
-      const savedHistory = localStorage.getItem('uttt_series_history_v1');
+      const savedHistory = localStorage.getItem('uttt_series_history_v2');
       if (savedHistory) state.history = JSON.parse(savedHistory);
       const savedName = localStorage.getItem('uttt_player_name_v1');
       if (savedName && savedName.trim()) state.playerName = savedName.trim();
+      const savedRating = localStorage.getItem('uttt_player_rating_v1');
+      if (savedRating) state.rating = parseInt(savedRating, 10) || 1200;
+      const savedTheme = localStorage.getItem('uttt_theme_v1');
+      if (savedTheme && THEMES[savedTheme]) state.theme = savedTheme;
     } catch (_) {
       state.history = [];
     }
 
     // -------------------------------------------------------------------------
-    // Profile Menu & Player Name Sync
+    // Profile Menu, Theme & Player Name Sync
     // -------------------------------------------------------------------------
 
     function computeInitials(name) {
@@ -455,9 +521,22 @@
       profilePillNameEl.textContent = display;
       headerPlayerXNameEl.textContent = display;
       clockNameXEl.textContent = display;
+      statRatingEl.textContent = String(state.rating);
       if (inputPlayerNameEl.value !== state.playerName) {
         inputPlayerNameEl.value = state.playerName;
       }
+    }
+
+    function applyTheme(themeKey) {
+      state.theme = themeKey;
+      const themeObj = THEMES[themeKey] || THEMES.neon;
+      document.body.style.backgroundColor = themeObj.bg;
+      boardContainerWrapperEl.className = `relative border p-2.5 sm:p-4 rounded-2xl shadow-2xl transition-colors ${themeObj.card}`;
+      try {
+        localStorage.setItem('uttt_theme_v1', themeKey);
+      } catch (_) {}
+      renderBoard();
+      syncSettingsSummary();
     }
 
     function toggleProfileMenu(forceOpen) {
@@ -744,6 +823,22 @@
       const seriesWon = state.scoreX >= state.seriesTarget || state.scoreO >= state.seriesTarget;
       const pNameX = state.playerName.trim() || 'Player X';
 
+      // Rating adjustment simulation (Elo-style)
+      const oldRating = state.rating;
+      let ratingDelta = 0;
+      if (winner === 'X') {
+        ratingDelta = state.opponent === 'bot-grandmaster' ? 24 : state.opponent === 'bot-tactical' ? 16 : 10;
+      } else if (winner === 'O') {
+        ratingDelta = state.opponent === 'bot-grandmaster' ? -12 : state.opponent === 'bot-tactical' ? -16 : -22;
+      } else {
+        ratingDelta = 2; // minor draw gain/loss
+      }
+      state.rating = Math.max(100, state.rating + ratingDelta);
+      statRatingEl.textContent = String(state.rating);
+      try {
+        localStorage.setItem('uttt_player_rating_v1', String(state.rating));
+      } catch (_) {}
+
       state.history.unshift({
         id: Date.now(),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -753,11 +848,14 @@
         movesCount: state.moves.length,
         opponent: getOpponentLabel(state.opponent),
         seriesScore: `${state.scoreX}-${state.scoreO}`,
-        seriesComplete: seriesWon
+        seriesComplete: seriesWon,
+        oldRating,
+        newRating: state.rating,
+        ratingDelta
       });
       if (state.history.length > 30) state.history.pop();
       try {
-        localStorage.setItem('uttt_series_history_v1', JSON.stringify(state.history));
+        localStorage.setItem('uttt_series_history_v2', JSON.stringify(state.history));
       } catch (_) {}
       renderHistory();
 
@@ -774,7 +872,7 @@
         overlayTitleEl.className = 'text-2xl sm:text-3xl font-extrabold text-amber-300 mb-1';
       }
 
-      overlaySubtitleEl.textContent = `${reason} Series score: ${state.scoreX} – ${state.scoreO} (First to ${state.seriesTarget}).`;
+      overlaySubtitleEl.textContent = `${reason} Rating change: ${ratingDelta >= 0 ? '+' : ''}${ratingDelta} (${state.rating}). Series: ${state.scoreX}–${state.scoreO}.`;
       document.getElementById('btn-overlay-next').textContent = seriesWon ? 'Start New Series' : 'Play Next Game';
       resultOverlayEl.classList.remove('hidden');
       updateTurnIndicators();
@@ -842,6 +940,7 @@
 
     function renderBoard() {
       macroBoardEl.innerHTML = '';
+      const themeObj = THEMES[state.theme] || THEMES.neon;
 
       for (let bIdx = 0; bIdx < 9; bIdx++) {
         const subWinner = state.macroWinners[bIdx];
@@ -850,9 +949,7 @@
         const subBoardEl = document.createElement('div');
         subBoardEl.className = [
           'relative grid grid-cols-3 gap-1 sm:gap-1.5 p-1.5 sm:p-2 rounded-xl border transition-all duration-200',
-          isPlayableBoard
-            ? 'bg-slate-800/90 border-sky-400/70 active-board-glow'
-            : 'bg-slate-950/80 border-slate-800/80 opacity-85'
+          isPlayableBoard ? themeObj.subActive : themeObj.subInactive
         ].join(' ');
 
         for (let cIdx = 0; cIdx < 9; cIdx++) {
@@ -862,16 +959,16 @@
 
           cellBtn.disabled = !canClick;
           cellBtn.className = [
-            'aspect-square rounded-lg flex items-center justify-center font-extrabold text-base sm:text-xl transition-all',
+            'aspect-square rounded-lg flex items-center justify-center font-extrabold text-base sm:text-xl transition-all border',
             val === null
-              ? (canClick ? 'bg-slate-900/95 border border-slate-700/70 cell-hover cursor-pointer' : 'bg-slate-900/50 border border-slate-800/50 cursor-default')
-              : 'bg-slate-900 border border-slate-800 cursor-default'
+              ? (canClick ? `${themeObj.cellHover} cursor-pointer` : `${themeObj.cellNormal} opacity-60 cursor-default`)
+              : `${themeObj.cellNormal} cursor-default`
           ].join(' ');
 
           if (val === 'X') {
-            cellBtn.innerHTML = '<span class="text-sky-400 mark-animate">X</span>';
+            cellBtn.innerHTML = `<span class="${themeObj.xColor} mark-animate">X</span>`;
           } else if (val === 'O') {
-            cellBtn.innerHTML = '<span class="text-rose-400 mark-animate">O</span>';
+            cellBtn.innerHTML = `<span class="${themeObj.oColor} mark-animate">O</span>`;
           }
 
           if (canClick) {
@@ -988,11 +1085,12 @@
       statTotalGamesEl.textContent = String(total);
       statTotalWinsEl.textContent = String(wins);
       statWinRateEl.textContent = `${winRate}%`;
+      statRatingEl.textContent = String(state.rating);
 
       if (total === 0) {
         historyListEl.innerHTML = `
           <div class="text-xs text-slate-500 italic text-center py-6 bg-slate-950/60 rounded-xl border border-slate-800/70">
-            No completed games recorded yet. Finish a match to log its result here.
+            No completed games recorded yet. Finish a match to log its result and rating history here.
           </div>
         `;
         return;
@@ -1006,9 +1104,11 @@
             : 'bg-amber-500/15 text-amber-300 border-amber-500/30';
 
         const winnerText = item.winner === 'D' ? 'Draw' : `${item.winner} Won`;
+        const deltaStr = item.ratingDelta >= 0 ? `+${item.ratingDelta}` : `${item.ratingDelta}`;
+        const deltaColor = item.ratingDelta > 0 ? 'text-emerald-400' : item.ratingDelta < 0 ? 'text-rose-400' : 'text-slate-400';
 
         return `
-          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/90 flex flex-col gap-1">
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/90 flex flex-col gap-1.5">
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2 min-w-0">
                 <span class="text-[11px] font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">
@@ -1018,9 +1118,9 @@
               </div>
               <span class="text-[11px] font-mono text-slate-400 shrink-0">${item.timestamp}</span>
             </div>
-            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-0.5">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/60 pt-1">
               <span>${item.movesCount} moves • Series ${item.seriesScore}</span>
-              ${item.seriesComplete ? '<span class="text-amber-400 font-semibold">★ Series Clincher</span>' : ''}
+              <span class="font-mono font-bold ${deltaColor}">Rating: ${item.newRating} (${deltaStr})</span>
             </div>
           </div>
         `;
@@ -1043,7 +1143,9 @@
       const timeLabel = state.baseTimeMs === 0
         ? 'No Clock'
         : `${state.baseTimeMs / 60000}m + ${state.incrementMs / 1000}s`;
-      settingsSummaryPillEl.textContent = `${seriesMap[state.seriesTarget]} • ${timeLabel} • ${getOpponentLabel(state.opponent)}`;
+      const themeNameMap = { neon: 'Neon Dark', slate: 'Slate Minimal', emerald: 'Emerald Pitch', sunset: 'Sunset Amber' };
+
+      settingsSummaryPillEl.textContent = `${seriesMap[state.seriesTarget]} • ${timeLabel} • ${getOpponentLabel(state.opponent)} • ${themeNameMap[state.theme]}`;
       seriesTargetBadgeEl.textContent = `First to ${state.seriesTarget}`;
     }
 
@@ -1111,6 +1213,10 @@
       resetBoardForNextGame(true);
     });
 
+    document.getElementById('select-theme').addEventListener('change', (e) => {
+      applyTheme(e.target.value);
+    });
+
     document.getElementById('btn-new-game').addEventListener('click', () => resetBoardForNextGame(false));
     document.getElementById('btn-reset-series').addEventListener('click', () => resetBoardForNextGame(true));
     document.getElementById('btn-overlay-next').addEventListener('click', () => resetBoardForNextGame(false));
@@ -1119,12 +1225,14 @@
     document.getElementById('btn-clear-history').addEventListener('click', () => {
       state.history = [];
       try {
-        localStorage.removeItem('uttt_series_history_v1');
+        localStorage.removeItem('uttt_series_history_v2');
       } catch (_) {}
       renderHistory();
     });
 
     // Initial Boot
+    document.getElementById('select-theme').value = state.theme;
+    applyTheme(state.theme);
     syncProfileUI();
     syncSettingsSummary();
     renderHistory();
