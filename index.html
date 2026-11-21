@@ -39,7 +39,6 @@
     .mark-animate {
       animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -80,7 +79,7 @@
       <div class="flex items-center gap-2 sm:gap-3 bg-slate-950/90 border border-slate-800 px-3 py-1.5 rounded-xl">
         <div class="flex items-center gap-1.5">
           <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-          <span class="text-xs font-semibold text-slate-300">Player X</span>
+          <span id="header-player-x-name" class="text-xs font-semibold text-slate-300">Player X</span>
           <span id="score-x" class="font-mono font-bold text-sm text-sky-400 ml-1">0</span>
         </div>
         <span class="text-slate-600 text-xs font-mono">vs</span>
@@ -95,7 +94,7 @@
         </span>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Right Header Controls: Match Actions + Profile Menu -->
       <div class="flex items-center gap-2">
         <button id="btn-new-game" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition">
           Next Game
@@ -103,6 +102,78 @@
         <button id="btn-reset-series" class="px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-semibold border border-rose-500/30 transition">
           Reset Series
         </button>
+
+        <!-- Profile & Game History Dropdown Container -->
+        <div class="relative" id="profile-menu-container">
+          <button id="btn-profile-toggle" aria-expanded="false" aria-haspopup="true" class="flex items-center gap-2 pl-2 pr-2.5 py-1 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/90 transition">
+            <span id="profile-avatar-initials" class="w-6 h-6 rounded-lg bg-gradient-to-br from-sky-400 to-indigo-500 text-slate-950 font-extrabold text-xs flex items-center justify-center">
+              PX
+            </span>
+            <span id="profile-pill-name" class="text-xs font-semibold text-slate-100 hidden sm:inline max-w-[96px] truncate">
+              Player X
+            </span>
+            <span id="profile-history-badge" class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              0
+            </span>
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Openable Profile & Game History Popover Menu -->
+          <div id="profile-popover-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl shadow-black/70 z-50 overflow-hidden">
+            <!-- Profile Header & Editable Display Name -->
+            <div class="p-4 bg-slate-950/70 border-b border-slate-800">
+              <div class="flex items-center gap-3 mb-3">
+                <div id="popover-avatar-initials" class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 text-slate-950 font-black text-sm flex items-center justify-center shrink-0">
+                  PX
+                </div>
+                <div class="flex-1 min-w-0">
+                  <label for="input-player-name" class="block text-[10px] uppercase tracking-wider font-semibold text-slate-400 mb-0.5">
+                    Player Profile Name
+                  </label>
+                  <input id="input-player-name" type="text" maxlength="20" value="Player X" placeholder="Enter display name"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-white focus:outline-none focus:border-sky-500 select-text" />
+                </div>
+              </div>
+
+              <!-- Career Stats Summary -->
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
+                  <div id="stat-total-games" class="font-mono text-sm font-bold text-white">0</div>
+                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Played</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
+                  <div id="stat-total-wins" class="font-mono text-sm font-bold text-sky-400">0</div>
+                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Wins</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl py-1.5 px-2">
+                  <div id="stat-win-rate" class="font-mono text-sm font-bold text-emerald-400">0%</div>
+                  <div class="text-[10px] text-slate-400 uppercase tracking-wider">Win Rate</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game History Archive Section -->
+            <div class="p-4 flex flex-col gap-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-100">Game History</span>
+                  <span id="history-count-pill" class="text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full">
+                    0 saved
+                  </span>
+                </div>
+                <button id="btn-clear-history" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold transition">
+                  Clear Archive
+                </button>
+              </div>
+
+              <div id="history-list" class="max-h-64 overflow-y-auto space-y-2 pr-1">
+                <!-- Populated dynamically by renderHistory() -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -168,8 +239,8 @@
       <div class="grid grid-cols-12 gap-3 items-center">
         <!-- Player X Clock -->
         <div id="clock-card-x" class="col-span-4 bg-slate-900 border-2 border-sky-500/70 rounded-xl px-3.5 py-2.5 flex items-center justify-between transition">
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-400">Player X</div>
+          <div class="min-w-0 pr-1">
+            <div id="clock-name-x" class="text-[11px] font-bold uppercase tracking-wider text-sky-400 truncate">Player X</div>
             <div class="text-[11px] text-slate-400" id="status-sub-x">Your turn</div>
           </div>
           <div id="clock-x" class="font-mono text-lg sm:text-xl font-bold text-white">03:00</div>
@@ -183,8 +254,8 @@
 
         <!-- Player O Clock -->
         <div id="clock-card-o" class="col-span-4 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 flex items-center justify-between transition">
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-rose-400" id="clock-name-o">Bot (O)</div>
+          <div class="min-w-0 pr-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-rose-400 truncate" id="clock-name-o">Bot (O)</div>
             <div class="text-[11px] text-slate-400" id="status-sub-o">Waiting</div>
           </div>
           <div id="clock-o" class="font-mono text-lg sm:text-xl font-bold text-slate-300">03:00</div>
@@ -216,7 +287,7 @@
       </div>
     </section>
 
-    <!-- Right Column: Tactical Coach + Move Ledger + Collapsible Game History Sidebar (5 Cols) -->
+    <!-- Right Column: Tactical Coach + Expanded Move Notation Ledger (5 Cols) -->
     <aside class="lg:col-span-5 flex flex-col gap-4">
 
       <!-- Tactical Coach / Bot Telemetry Card -->
@@ -254,74 +325,46 @@
           <h3 class="text-sm font-bold text-slate-100">Move Notation Ledger</h3>
           <span id="move-count-badge" class="text-[11px] font-mono text-slate-400">0 moves</span>
         </div>
-        <div id="move-ledger" class="h-44 overflow-y-auto bg-slate-950/70 border border-slate-800/80 rounded-xl p-2.5 font-mono text-xs space-y-1">
-          <div class="text-slate-500 italic text-center py-12">No moves played yet. Click any highlighted cell to start.</div>
+        <div id="move-ledger" class="h-80 lg:h-[390px] overflow-y-auto bg-slate-950/70 border border-slate-800/80 rounded-xl p-2.5 font-mono text-xs space-y-1">
+          <div class="text-slate-500 italic text-center py-24">No moves played yet. Click any highlighted cell to start.</div>
         </div>
       </div>
-
-      <!-- Collapsible Game History Panel (Relocated to Sidebar) -->
-      <details id="game-history-panel" class="group bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-        <summary class="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 transition">
-          <div class="flex items-center gap-2.5">
-            <svg class="w-4 h-4 text-amber-400 transition-transform duration-200 group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-            <span class="text-sm font-bold text-slate-100">Game History</span>
-            <span id="history-count-pill" class="text-[11px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full">
-              0 saved
-            </span>
-          </div>
-          <span class="text-[11px] text-slate-400 font-medium">tap to expand / collapse</span>
-        </summary>
-
-        <div class="p-4 border-t border-slate-800/80 bg-slate-950/40 flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] text-slate-400">Completed series & match archive</span>
-            <button id="btn-clear-history" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold transition">
-              Clear Archive
-            </button>
-          </div>
-          <div id="history-list" class="max-h-64 overflow-y-auto space-y-2 pr-1">
-            <!-- Populated dynamically by renderHistory() -->
-          </div>
-        </div>
-      </details>
 
     </aside>
   </main>
 
   <script>
     // =========================================================================
-    // ULTIMATE TIC-TAC-TOE ENGINE (SERIES + TIME-AWARE BOTS + HISTORY SIDEBAR)
+    // ULTIMATE TIC-TAC-TOE ENGINE (SERIES + TIME-AWARE BOTS + PROFILE MENU)
     // =========================================================================
 
     const WIN_LINES = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // cols
-      [0, 4, 8], [2, 4, 6]             // diagonals
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
     ];
 
     const BOARD_NAMES = ['NW', 'N', 'NE', 'W', 'C', 'E', 'SW', 'S', 'SE'];
 
     const state = {
-      // Board state: 9 sub-boards of 9 cells each ('X', 'O', or null)
       boards: Array.from({ length: 9 }, () => Array(9).fill(null)),
-      macroWinners: Array(9).fill(null), // 'X', 'O', 'D' (draw), or null
+      macroWinners: Array(9).fill(null),
       currentPlayer: 'X',
-      activeBoard: null, // 0..8 or null (any non-decided board)
+      activeBoard: null,
       gameOver: false,
       winner: null,
       winReason: '',
       moves: [],
 
-      // Series & Settings
+      // Profile & Series Settings
+      playerName: 'Player X',
       opponent: 'bot-tactical',
       seriesTarget: 2,
       scoreX: 0,
       scoreO: 0,
       gameNumber: 1,
 
-      // Time Controls (in milliseconds)
+      // Time Controls (ms)
       baseTimeMs: 180000,
       incrementMs: 2000,
       timeX: 180000,
@@ -330,7 +373,7 @@
       timerInterval: null,
       botTimeout: null,
 
-      // Saved Match History (persisted in localStorage)
+      // Saved Match History
       history: []
     };
 
@@ -338,6 +381,8 @@
     const macroBoardEl = document.getElementById('macro-board');
     const scoreXEl = document.getElementById('score-x');
     const scoreOEl = document.getElementById('score-o');
+    const headerPlayerXNameEl = document.getElementById('header-player-x-name');
+    const clockNameXEl = document.getElementById('clock-name-x');
     const labelPlayerOEl = document.getElementById('label-player-o');
     const clockNameOEl = document.getElementById('clock-name-o');
     const seriesTargetBadgeEl = document.getElementById('series-target-badge');
@@ -365,16 +410,88 @@
     const overlayTitleEl = document.getElementById('overlay-title');
     const overlaySubtitleEl = document.getElementById('overlay-subtitle');
 
+    // Profile Menu DOM References
+    const profileMenuContainerEl = document.getElementById('profile-menu-container');
+    const btnProfileToggleEl = document.getElementById('btn-profile-toggle');
+    const profilePopoverMenuEl = document.getElementById('profile-popover-menu');
+    const profileAvatarInitialsEl = document.getElementById('profile-avatar-initials');
+    const popoverAvatarInitialsEl = document.getElementById('popover-avatar-initials');
+    const profilePillNameEl = document.getElementById('profile-pill-name');
+    const profileHistoryBadgeEl = document.getElementById('profile-history-badge');
+    const inputPlayerNameEl = document.getElementById('input-player-name');
+    const statTotalGamesEl = document.getElementById('stat-total-games');
+    const statTotalWinsEl = document.getElementById('stat-total-wins');
+    const statWinRateEl = document.getElementById('stat-win-rate');
     const historyCountPillEl = document.getElementById('history-count-pill');
     const historyListEl = document.getElementById('history-list');
 
-    // Load saved history
+    // Load saved history & profile name
     try {
-      const saved = localStorage.getItem('uttt_series_history_v1');
-      if (saved) state.history = JSON.parse(saved);
+      const savedHistory = localStorage.getItem('uttt_series_history_v1');
+      if (savedHistory) state.history = JSON.parse(savedHistory);
+      const savedName = localStorage.getItem('uttt_player_name_v1');
+      if (savedName && savedName.trim()) state.playerName = savedName.trim();
     } catch (_) {
       state.history = [];
     }
+
+    // -------------------------------------------------------------------------
+    // Profile Menu & Player Name Sync
+    // -------------------------------------------------------------------------
+
+    function computeInitials(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return 'PX';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function syncProfileUI() {
+      const display = state.playerName.trim() || 'Player X';
+      const initials = computeInitials(display);
+
+      profileAvatarInitialsEl.textContent = initials;
+      popoverAvatarInitialsEl.textContent = initials;
+      profilePillNameEl.textContent = display;
+      headerPlayerXNameEl.textContent = display;
+      clockNameXEl.textContent = display;
+      if (inputPlayerNameEl.value !== state.playerName) {
+        inputPlayerNameEl.value = state.playerName;
+      }
+    }
+
+    function toggleProfileMenu(forceOpen) {
+      const isHidden = profilePopoverMenuEl.classList.contains('hidden');
+      const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : isHidden;
+      profilePopoverMenuEl.classList.toggle('hidden', !shouldOpen);
+      btnProfileToggleEl.setAttribute('aria-expanded', String(shouldOpen));
+    }
+
+    btnProfileToggleEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleProfileMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileMenuContainerEl.contains(e.target)) {
+        toggleProfileMenu(false);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        toggleProfileMenu(false);
+      }
+    });
+
+    inputPlayerNameEl.addEventListener('input', (e) => {
+      state.playerName = e.target.value || 'Player X';
+      try {
+        localStorage.setItem('uttt_player_name_v1', state.playerName);
+      } catch (_) {}
+      syncProfileUI();
+      updateTurnIndicators();
+    });
 
     // -------------------------------------------------------------------------
     // Core Game Logic & Rules
@@ -440,13 +557,11 @@
       let score = 0;
       const weights = [1.2, 1.0, 1.2, 1.0, 1.6, 1.0, 1.2, 1.0, 1.2];
 
-      // Macro-board ownership
       for (let i = 0; i < 9; i++) {
         if (macroWinners[i] === 'X') score += 120 * weights[i];
         else if (macroWinners[i] === 'O') score -= 120 * weights[i];
       }
 
-      // Macro two-in-a-row threats
       for (const [a, b, c] of WIN_LINES) {
         const line = [macroWinners[a], macroWinners[b], macroWinners[c]];
         const xCount = line.filter(v => v === 'X').length;
@@ -458,7 +573,6 @@
         }
       }
 
-      // Sub-board tactical threats
       for (let b = 0; b < 9; b++) {
         if (macroWinners[b] !== null) continue;
         for (const [a, c1, c2] of WIN_LINES) {
@@ -482,7 +596,6 @@
       const moves = getLegalMoves(boards, macroWinners, activeBoard);
       if (moves.length === 0) return { score: 0 };
 
-      // Move ordering: prioritize center cells & winning sub-boards
       moves.sort((m1, m2) => {
         const cScore1 = (m1.cIdx === 4 ? 2 : 0) + (m1.bIdx === 4 ? 1 : 0);
         const cScore2 = (m2.cIdx === 4 ? 2 : 0) + (m2.bIdx === 4 ? 1 : 0);
@@ -524,7 +637,6 @@
       const legal = getLegalMoves(state.boards, state.macroWinners, state.activeBoard);
       if (legal.length === 0) return null;
 
-      // Time-aware budget calculation
       let budgetMs = 160;
       let maxDepth = 3;
 
@@ -577,7 +689,6 @@
       state.macroWinners = next.macroWinners;
       state.activeBoard = next.activeBoard;
 
-      // Apply Fischer increment
       if (state.baseTimeMs > 0 && state.moves.length > 0) {
         if (player === 'X') state.timeX += state.incrementMs;
         else state.timeO += state.incrementMs;
@@ -598,15 +709,15 @@
       renderMoveLedger();
 
       if (next.macroWin) {
-        concludeGame(next.macroWin, next.macroWin === 'D' ? 'All macro-boards exhausted in a draw.' : `${next.macroWin} connected 3 macro-boards!`);
+        const pNameX = state.playerName.trim() || 'Player X';
+        const winLabel = next.macroWin === 'X' ? pNameX : getOpponentLabel(state.opponent);
+        concludeGame(next.macroWin, next.macroWin === 'D' ? 'All macro-boards exhausted in a draw.' : `${winLabel} connected 3 macro-boards!`);
         return;
       }
 
-      // Switch turn
       state.currentPlayer = player === 'X' ? 'O' : 'X';
       updateTurnIndicators();
 
-      // Trigger Bot if applicable
       if (!state.gameOver && state.currentPlayer === 'O' && state.opponent.startsWith('bot-')) {
         clearTimeout(state.botTimeout);
         const delay = state.opponent === 'bot-casual' ? 220 : 320;
@@ -631,12 +742,13 @@
       scoreOEl.textContent = state.scoreO;
 
       const seriesWon = state.scoreX >= state.seriesTarget || state.scoreO >= state.seriesTarget;
+      const pNameX = state.playerName.trim() || 'Player X';
 
-      // Archive completed game into history
       state.history.unshift({
         id: Date.now(),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         winner,
+        playerName: pNameX,
         reason,
         movesCount: state.moves.length,
         opponent: getOpponentLabel(state.opponent),
@@ -649,10 +761,9 @@
       } catch (_) {}
       renderHistory();
 
-      // Show overlay
       overlayBadgeEl.textContent = seriesWon ? 'Series Champion Crowned' : `Game ${state.gameNumber} Complete`;
       if (winner === 'X') {
-        overlayTitleEl.textContent = seriesWon ? 'Player X Wins the Series!' : 'Player X Wins Game!';
+        overlayTitleEl.textContent = seriesWon ? `${pNameX} Wins the Series!` : `${pNameX} Wins Game!`;
         overlayTitleEl.className = 'text-2xl sm:text-3xl font-extrabold text-sky-400 mb-1';
       } else if (winner === 'O') {
         const nameO = getOpponentLabel(state.opponent);
@@ -700,12 +811,14 @@
         const delta = now - state.lastTick;
         state.lastTick = now;
 
+        const pNameX = state.playerName.trim() || 'Player X';
+
         if (state.currentPlayer === 'X') {
           state.timeX -= delta;
           if (state.timeX <= 0) {
             state.timeX = 0;
             clockXEl.textContent = '00:00';
-            concludeGame('O', 'Player X ran out of time!');
+            concludeGame('O', `${pNameX} ran out of time!`);
             return;
           }
         } else {
@@ -768,7 +881,6 @@
           subBoardEl.appendChild(cellBtn);
         }
 
-        // Sub-board won/drawn overlay badge
         if (subWinner !== null) {
           const overlay = document.createElement('div');
           overlay.className = [
@@ -786,6 +898,7 @@
     }
 
     function updateTurnIndicators() {
+      const pNameX = state.playerName.trim() || 'Player X';
       const nameO = getOpponentLabel(state.opponent);
       labelPlayerOEl.textContent = nameO;
       clockNameOEl.textContent = nameO;
@@ -800,7 +913,7 @@
       }
 
       if (state.currentPlayer === 'X') {
-        turnIndicatorEl.textContent = 'X to Move';
+        turnIndicatorEl.textContent = `${pNameX} to Move`;
         turnIndicatorEl.className = 'text-xs sm:text-sm font-bold text-sky-400 truncate';
         clockCardXEl.className = 'col-span-4 bg-slate-900 border-2 border-sky-500/80 rounded-xl px-3.5 py-2.5 flex items-center justify-between transition';
         clockCardOEl.className = 'col-span-4 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 flex items-center justify-between transition opacity-75';
@@ -834,7 +947,6 @@
         evalLabelEl.textContent = `${pawns} (O Edge)`;
       }
 
-      // Dynamic tactical tip
       if (state.activeBoard === null && state.moves.length > 0) {
         coachMessageEl.textContent = `Free-board advantage! ${state.currentPlayer} can choose any undecided macro-board—look for immediate sub-board wins or center control.`;
       } else if (state.activeBoard === 4) {
@@ -847,7 +959,7 @@
     function renderMoveLedger() {
       moveCountBadgeEl.textContent = `${state.moves.length} ${state.moves.length === 1 ? 'move' : 'moves'}`;
       if (state.moves.length === 0) {
-        moveLedgerEl.innerHTML = '<div class="text-slate-500 italic text-center py-12">No moves played yet. Click any highlighted cell to start.</div>';
+        moveLedgerEl.innerHTML = '<div class="text-slate-500 italic text-center py-24">No moves played yet. Click any highlighted cell to start.</div>';
         return;
       }
 
@@ -867,11 +979,19 @@
     }
 
     function renderHistory() {
-      historyCountPillEl.textContent = `${state.history.length} saved`;
+      const total = state.history.length;
+      const wins = state.history.filter(item => item.winner === 'X').length;
+      const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
 
-      if (state.history.length === 0) {
+      profileHistoryBadgeEl.textContent = String(total);
+      historyCountPillEl.textContent = `${total} saved`;
+      statTotalGamesEl.textContent = String(total);
+      statTotalWinsEl.textContent = String(wins);
+      statWinRateEl.textContent = `${winRate}%`;
+
+      if (total === 0) {
         historyListEl.innerHTML = `
-          <div class="text-xs text-slate-500 italic text-center py-6 bg-slate-900/50 rounded-xl border border-slate-800/60">
+          <div class="text-xs text-slate-500 italic text-center py-6 bg-slate-950/60 rounded-xl border border-slate-800/70">
             No completed games recorded yet. Finish a match to log its result here.
           </div>
         `;
@@ -888,15 +1008,15 @@
         const winnerText = item.winner === 'D' ? 'Draw' : `${item.winner} Won`;
 
         return `
-          <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800/90 flex flex-col gap-1">
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/90 flex flex-col gap-1">
             <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="text-[11px] font-bold px-2 py-0.5 rounded border ${badgeClass}">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">
                   ${winnerText}
                 </span>
                 <span class="text-xs font-semibold text-slate-200 truncate">vs ${item.opponent}</span>
               </div>
-              <span class="text-[11px] font-mono text-slate-400">${item.timestamp}</span>
+              <span class="text-[11px] font-mono text-slate-400 shrink-0">${item.timestamp}</span>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-400 mt-0.5">
               <span>${item.movesCount} moves • Series ${item.seriesScore}</span>
@@ -971,7 +1091,6 @@
       startClockLoop();
     }
 
-    // Settings event listeners
     document.getElementById('select-opponent').addEventListener('change', (e) => {
       state.opponent = e.target.value;
       syncSettingsSummary();
@@ -1006,6 +1125,7 @@
     });
 
     // Initial Boot
+    syncProfileUI();
     syncSettingsSummary();
     renderHistory();
     resetBoardForNextGame(true);
